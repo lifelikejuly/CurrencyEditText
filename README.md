@@ -5,4 +5,4 @@
 例如输入为RMB显示为 :￥1,000
 
 #效果图
-![image](https://github.com/yuhaocan/MoneyEditText/blob/master/device-2016-07-21-224010.png)
+![image](https://github.com/yuhaocan/MoneyEditText/blob/master/2016-07-21-11mzresult.gif)
