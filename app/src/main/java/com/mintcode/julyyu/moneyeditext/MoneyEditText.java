@@ -102,7 +102,7 @@ public class MoneyEditText extends EditText implements TextWatcher{
         //整数小数分离
         String decimals = "";
         String integer = "";
-        String[] segments = content.split(".");
+        String[] segments = content.split("\\.");
         switch (segments.length){
             case 2:
                 integer = segments[0];
@@ -110,7 +110,7 @@ public class MoneyEditText extends EditText implements TextWatcher{
                 break;
             case 1:
                 integer = segments[0];
-                if(integer.indexOf(".") > 0){
+                if(content.indexOf(".") > 0){
                     decimals = "0";
                 }else{
                     decimals = "";
@@ -118,11 +118,6 @@ public class MoneyEditText extends EditText implements TextWatcher{
                 break;
             case 0:
                 integer = content;
-//                if(content.indexOf(".") > 0){
-//                    decimals = "0";
-//                }else{
-//                    decimals = "";
-//                }
                 break;
         }
         //截取数字字符
