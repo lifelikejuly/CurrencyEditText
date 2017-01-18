@@ -22,43 +22,57 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Administrator on 2016/7/21.
+ * Created by JulyYu on 2016/7/21.
  */
 public class MoneyEditText extends EditText implements TextWatcher{
 
-    Context context;
+    /**
+     * 货币符号
+     */
     DecimalFormatSymbols decimalFormatSymbols;
+    /**
+     * 数字格式化
+     */
     DecimalFormat decimalFormat;
-
-    String text;
+    /**
+     * 符号字符
+     */
     String moneySymbol;
+    /**
+     * 数字文本
+     */
+    String text;
+    /**
+     * 最大数字长度
+     */
+    int numLength = 15;
 
     public MoneyEditText(Context context) {
         super(context);
-        initView(context);
+        initView();
     }
 
     public MoneyEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initView(context);
+        initView();
     }
 
     public MoneyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(context);
+        initView();
     }
 
-    void initView(Context context){
-        this.context = context;
+    void initView(){
         int inputType = InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL;
         this.setInputType(inputType);
         this.addTextChangedListener(this);
-        this.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
+        this.setFilters(new InputFilter[]{new InputFilter.LengthFilter(numLength)});
         Configuration configuration = getResources().getConfiguration();
         decimalFormatSymbols = new DecimalFormatSymbols(configuration.locale);
+        moneySymbol = decimalFormatSymbols.getCurrencySymbol();
         decimalFormat = new DecimalFormat();
         decimalFormat.setGroupingSize(3);
-        moneySymbol = decimalFormatSymbols.getCurrencySymbol();
+        decimalFormat.setMaximumFractionDigits(3);
     }
 
     @Override
