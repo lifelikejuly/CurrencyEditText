@@ -47,6 +47,10 @@ public class MoneyEditText extends EditText implements TextWatcher{
      * 最大数字长度
      */
     int numLength = 15;
+    /**
+     * 是否有小数点
+     */
+    boolean hasDecimalPoint = false;
 
     public MoneyEditText(Context context) {
         super(context);
@@ -73,7 +77,6 @@ public class MoneyEditText extends EditText implements TextWatcher{
         moneySymbol = decimalFormatSymbols.getCurrencySymbol();
         decimalFormat = new DecimalFormat();
         decimalFormat.setGroupingSize(3);
-//        decimalFormat.setMaximumFractionDigits(3);
     }
 
     @Override
@@ -111,9 +114,9 @@ public class MoneyEditText extends EditText implements TextWatcher{
             case 1:
                 integer = segments[0];
                 if(content.indexOf(".") > 0){
-                    decimals = "0";
+                    hasDecimalPoint = true;
                 }else{
-                    decimals = "";
+                    hasDecimalPoint = false;
                 }
                 break;
             case 0:
@@ -124,11 +127,17 @@ public class MoneyEditText extends EditText implements TextWatcher{
         integer = filterStringNum(integer);
         decimals = filterStringNum(decimals);
         //重新组装货币显示字符串
-        Integer integerNum = str2Int(integer);
-        Integer decimalsNum = str2Int(decimals);
-        decimals = formatToCurrency(decimalsNum);
-        decimals = TextUtils.isEmpty(decimals) ? "" : "." + decimals;
-        content = moneySymbol + formatToCurrency(integerNum) + decimals;
+        Long integerNum = str2Long(integer);
+        Long decimalsNum = str2Long(decimals);
+        if(hasDecimalPoint){
+            content = moneySymbol
+                    + formatToCurrency(integerNum)
+                    + "."
+                    + formatToCurrency(decimalsNum);
+        }else{
+            content = moneySymbol
+                    + formatToCurrency(integerNum);
+        }
         text = content;
         this.setText(text);
         this.setSelection(this.getText().length());
@@ -148,20 +157,27 @@ public class MoneyEditText extends EditText implements TextWatcher{
         }
         return builder == null ? "" : builder.toString();
     }
-    private Integer str2Int(String str){
-        Integer num = null;
+
+    private Long str2Long(String str){
+        Long num = null;
         try {
-            num = Integer.valueOf(str);
+            num = Long.valueOf(str);
         }catch (IllegalArgumentException e){
             e.printStackTrace();
         }
         return num;
     }
-    private String formatToCurrency(Integer integer){
-        if (integer == null) return "";
+
+    /**
+     * 货币格式化
+     * @param lng
+     * @return
+     */
+    private String formatToCurrency(Long lng){
+        if (lng == null) return "";
         String str = "";
         try {
-            str = decimalFormat.format(integer);
+            str = decimalFormat.format(lng);
         }catch (IllegalFormatException e){
             e.printStackTrace();
         }
