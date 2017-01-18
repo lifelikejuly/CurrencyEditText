@@ -17,6 +17,7 @@ import android.widget.EditText;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.IllegalFormatCodePointException;
+import java.util.IllegalFormatException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,7 +73,7 @@ public class MoneyEditText extends EditText implements TextWatcher{
         moneySymbol = decimalFormatSymbols.getCurrencySymbol();
         decimalFormat = new DecimalFormat();
         decimalFormat.setGroupingSize(3);
-        decimalFormat.setMaximumFractionDigits(3);
+//        decimalFormat.setMaximumFractionDigits(3);
     }
 
     @Override
@@ -91,39 +92,84 @@ public class MoneyEditText extends EditText implements TextWatcher{
         if(TextUtils.isEmpty(content) || TextUtils.equals(text,s)){
             return;
         }
+        //清空特殊的显示内容
         if(content.contains(moneySymbol+".") || TextUtils.equals(s,".")){
             this.setText("");
             return;
         }
-        int indexOf = content.indexOf(".");
+        //去货币符号
+        content = content.replace(moneySymbol,"");
+        //整数小数分离
         String decimals = "";
-        if(indexOf > 0){
-            decimals = content.substring(indexOf);
-            content = content.substring(0,indexOf);
-            Log.i("money decimals",decimals);
+        String integer = "";
+        String[] segments = content.split(".");
+        switch (segments.length){
+            case 2:
+                integer = segments[0];
+                decimals = segments[1];
+                break;
+            case 1:
+                integer = segments[0];
+                if(integer.indexOf(".") > 0){
+                    decimals = "0";
+                }else{
+                    decimals = "";
+                }
+                break;
+            case 0:
+                integer = content;
+//                if(content.indexOf(".") > 0){
+//                    decimals = "0";
+//                }else{
+//                    decimals = "";
+//                }
+                break;
         }
+        //截取数字字符
+        integer = filterStringNum(integer);
+        decimals = filterStringNum(decimals);
+        //重新组装货币显示字符串
+        Integer integerNum = str2Int(integer);
+        Integer decimalsNum = str2Int(decimals);
+        decimals = formatToCurrency(decimalsNum);
+        decimals = TextUtils.isEmpty(decimals) ? "" : "." + decimals;
+        content = moneySymbol + formatToCurrency(integerNum) + decimals;
+        text = content;
+        this.setText(text);
+        this.setSelection(this.getText().length());
+    }
+
+    /**
+     * 正则筛选数字
+     * @param str
+     * @return
+     */
+    private String filterStringNum(String str){
         Pattern p = Pattern.compile("(\\d+)");
-        Matcher m = p.matcher(content);
+        Matcher m = p.matcher(str);
         StringBuilder builder = new StringBuilder();
         while(m.find()){
             builder.append(m.group());
-            Log.i("money find",builder.toString());
         }
-        if(builder != null){
-            content = builder.toString();
-            Log.i("money content",content);
-        }
+        return builder == null ? "" : builder.toString();
+    }
+    private Integer str2Int(String str){
+        Integer num = null;
         try {
-            Integer num = Integer.valueOf(content);
-            Log.i("money num",num + "");
-            content = moneySymbol + decimalFormat.format(num) + decimals;
-            Log.i("money", content);
-            text = content;
-            this.setText(text);
+            num = Integer.valueOf(str);
         }catch (IllegalArgumentException e){
             e.printStackTrace();
         }
-        text = content;
-        this.setSelection(this.getText().length());
+        return num;
+    }
+    private String formatToCurrency(Integer integer){
+        if (integer == null) return "";
+        String str = "";
+        try {
+            str = decimalFormat.format(integer);
+        }catch (IllegalFormatException e){
+            e.printStackTrace();
+        }
+        return str;
     }
 }
