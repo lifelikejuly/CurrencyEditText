@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MoneyEditTextAttrs">
+        <attr name="numlength" format="integer"/>
+        <attr name="numdecimal" format="integer"/>
+        <attr name="symbolshow" format="boolean"/>
+    </declare-styleable>
+
+</resources>

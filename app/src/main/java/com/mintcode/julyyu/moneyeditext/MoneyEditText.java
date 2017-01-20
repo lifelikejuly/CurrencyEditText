@@ -3,6 +3,7 @@ package com.mintcode.julyyu.moneyeditext;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.BadParcelableException;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -48,9 +49,21 @@ public class MoneyEditText extends EditText implements TextWatcher{
      */
     int numLength = 15;
     /**
+     *
+     */
+    int numdecimal = 4;
+    /**
      * 是否有小数点
      */
     boolean hasDecimalPoint = false;
+    /**
+     * 是否显示货币符号
+     */
+    boolean hasSymbol = true;
+    /**
+     * 是否显示小数部分
+     */
+    boolean hasDecimal = true;
 
     public MoneyEditText(Context context) {
         super(context);
@@ -59,22 +72,39 @@ public class MoneyEditText extends EditText implements TextWatcher{
 
     public MoneyEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
+        initParameters(context,attrs);
         initView();
     }
 
     public MoneyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initParameters(context,attrs);
         initView();
     }
 
+    private void initParameters(Context context, AttributeSet attrs) {
+       TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.MoneyEditTextAttrs);
+        numLength = typedArray.getInteger(R.styleable.MoneyEditTextAttrs_numlength,15);
+        numdecimal = typedArray.getInteger(R.styleable.MoneyEditTextAttrs_numdecimal,4);
+        hasSymbol = typedArray.getBoolean(R.styleable.MoneyEditTextAttrs_symbolshow,true);
+        numdecimal = numdecimal < 0 ? 0 : numdecimal;
+        hasDecimal = numdecimal > 0 ? true : false;
+    }
+
     void initView(){
-        int inputType = InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL;
+        int inputType;
+        if(hasDecimal){
+            inputType = InputType.TYPE_CLASS_NUMBER|InputType.TYPE_NUMBER_FLAG_DECIMAL;
+        }else{
+            inputType = InputType.TYPE_CLASS_NUMBER;
+        }
         this.setInputType(inputType);
         this.addTextChangedListener(this);
         this.setFilters(new InputFilter[]{new InputFilter.LengthFilter(numLength)});
         Configuration configuration = getResources().getConfiguration();
         decimalFormatSymbols = new DecimalFormatSymbols(configuration.locale);
         moneySymbol = decimalFormatSymbols.getCurrencySymbol();
+        moneySymbol = hasSymbol ? moneySymbol : "";
         decimalFormat = new DecimalFormat();
         decimalFormat.setGroupingSize(3);
     }
@@ -126,10 +156,13 @@ public class MoneyEditText extends EditText implements TextWatcher{
         //截取数字字符
         integer = filterStringNum(integer);
         decimals = filterStringNum(decimals);
+        if(hasDecimal && decimals.length() >= numdecimal){
+            decimals = decimals.substring(0,numdecimal);
+        }
         //重新组装货币显示字符串
         Long integerNum = str2Long(integer);
         Long decimalsNum = str2Long(decimals);
-        if(hasDecimalPoint){
+        if(hasDecimalPoint && hasDecimal){
             content = moneySymbol
                     + formatToCurrency(integerNum)
                     + "."
@@ -157,7 +190,15 @@ public class MoneyEditText extends EditText implements TextWatcher{
         }
         return builder == null ? "" : builder.toString();
     }
-
+    private String filterSringFloat(String str){
+        Pattern p = Pattern.compile("\\-*\\d+(\\.\\d+)?");
+        Matcher m = p.matcher(str);
+        StringBuilder builder = new StringBuilder();
+        while(m.find()){
+            builder.append(m.group());
+        }
+        return builder == null ? "" : builder.toString();
+    }
     private Long str2Long(String str){
         Long num = null;
         try {
@@ -182,5 +223,14 @@ public class MoneyEditText extends EditText implements TextWatcher{
             e.printStackTrace();
         }
         return str;
+    }
+
+    public float getMoneyValue(){
+        String content = this.getText().toString();
+        if(TextUtils.isEmpty(content)){
+            return 0;
+        }
+        content = filterSringFloat(content);
+        return Float.valueOf(content);
     }
 }
