@@ -12,3 +12,5 @@
 - [x] 添加attrs参数(金额显示位数/小数点显示位数/金额颜色/是否显示货币符号...)
 - [x] 支持货币金额转float类型数值
 - [ ] 小数点第一位可为0
+
+[![](https://jitpack.io/v/yuhaocan/MoneyEditText.svg)](https://jitpack.io/#yuhaocan/MoneyEditText)
