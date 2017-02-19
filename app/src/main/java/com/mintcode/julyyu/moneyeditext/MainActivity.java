@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.julyyu.moneyeditext.MoneyEditText;
+
 public class MainActivity extends AppCompatActivity {
 
     MoneyEditText moneyEditText;
