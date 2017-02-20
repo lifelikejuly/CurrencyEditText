@@ -1,4 +1,4 @@
-package com.julyyu.moneyeditext;
+package com.julyyu.currencyedittext;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 /**
  * Created by JulyYu on 2016/7/21.
  */
-public class MoneyEditText extends EditText implements TextWatcher{
+public class CurrencyEditText extends EditText implements TextWatcher{
 
     /**
      * 货币符号
@@ -64,18 +64,18 @@ public class MoneyEditText extends EditText implements TextWatcher{
      */
     boolean hasDecimalZero = false;
 
-    public MoneyEditText(Context context) {
+    public CurrencyEditText(Context context) {
         super(context);
         initView();
     }
 
-    public MoneyEditText(Context context, AttributeSet attrs) {
+    public CurrencyEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
         initParameters(context,attrs);
         initView();
     }
 
-    public MoneyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CurrencyEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initParameters(context,attrs);
         initView();
@@ -111,11 +111,20 @@ public class MoneyEditText extends EditText implements TextWatcher{
     @Override
     public void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
+
+        Log.i("ontext","onTextChanged \n" + " CharSequence : " + text + " lengthBefore:" + lengthBefore + " lengthAfter:" + lengthAfter);
+
+//        int end = this.getSelectionEnd();
+//        int ssss = this.getSelectionStart();
+//        Log.i("ontext","Changed" + " start" + ssss + "----end " + end + "");
     }
 
     @Override
     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+        Log.i("ontext","beforeTextChanged \n" + " CharSequence : " + s + " start" + start + " count:" + count + " after:" + after);
+//        int end = this.getSelectionEnd();
+//        int ssss = this.getSelectionStart();
+//        Log.i("ontext","before" + " start" + ssss + "----end " + end + "");
     }
 
     @Override
@@ -171,7 +180,6 @@ public class MoneyEditText extends EditText implements TextWatcher{
             content = moneySymbol
                     + formatToCurrency(integerNum)
                     + "."
-//                    + (hasDecimalZero ? "0" : "")
                     + decimalFormatToCurrency(decimalsNum);
         }else{
             content = moneySymbol

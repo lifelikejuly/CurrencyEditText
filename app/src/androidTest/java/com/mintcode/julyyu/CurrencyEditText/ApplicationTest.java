@@ -1,4 +1,4 @@
-package com.mintcode.julyyu.moneyeditext;
+package com.mintcode.julyyu.currencyedittext;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
