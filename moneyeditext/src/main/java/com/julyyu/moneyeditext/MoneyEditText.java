@@ -9,6 +9,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.EditText;
 
 import java.text.DecimalFormat;
@@ -58,6 +59,10 @@ public class MoneyEditText extends EditText implements TextWatcher{
      * 是否显示小数部分
      */
     boolean hasDecimal = true;
+    /**
+     * 小数第一位是否为0
+     */
+    boolean hasDecimalZero = false;
 
     public MoneyEditText(Context context) {
         super(context);
@@ -153,6 +158,12 @@ public class MoneyEditText extends EditText implements TextWatcher{
         if(hasDecimal && decimals.length() >= numdecimal){
             decimals = decimals.substring(0,numdecimal);
         }
+        if(decimals != null && decimals.length() > 1){
+            String zero = decimals.substring(0,1);
+            hasDecimalZero = TextUtils.equals(zero,"0") ? true : false;
+        }else if(decimals.length() <= 1){
+            hasDecimalZero = false;
+        }
         //重新组装货币显示字符串
         Long integerNum = str2Long(integer);
         Long decimalsNum = str2Long(decimals);
@@ -160,7 +171,8 @@ public class MoneyEditText extends EditText implements TextWatcher{
             content = moneySymbol
                     + formatToCurrency(integerNum)
                     + "."
-                    + formatToCurrency(decimalsNum);
+//                    + (hasDecimalZero ? "0" : "")
+                    + decimalFormatToCurrency(decimalsNum);
         }else{
             content = moneySymbol
                     + formatToCurrency(integerNum);
@@ -219,6 +231,43 @@ public class MoneyEditText extends EditText implements TextWatcher{
         return str;
     }
 
+    /**
+     * 小数货币格式化
+     * @param lng
+     * @return
+     */
+    private String decimalFormatToCurrency(Long lng){
+        if (lng == null) return "";
+        String str = "";
+        if(hasDecimalZero){
+            int bit = lng.toString().length() + 1;
+            StringBuilder builder = new StringBuilder();
+            while (bit > 0){
+                builder.append("0");
+                bit --;
+            }
+            DecimalFormat df = new DecimalFormat(builder.toString());
+            df.setGroupingUsed(true);
+            df.setGroupingSize(3);
+            try {
+                str = df.format(lng);
+            }catch (IllegalFormatException e){
+                e.printStackTrace();
+            }
+        }else{
+            try {
+                str = decimalFormat.format(lng);
+            }catch (IllegalFormatException e){
+                e.printStackTrace();
+            }
+        }
+        return str;
+    }
+
+    /**
+     *
+     * @return
+     */
     public float getMoneyValue(){
         String content = this.getText().toString();
         if(TextUtils.isEmpty(content)){
