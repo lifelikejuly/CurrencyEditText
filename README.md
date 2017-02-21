@@ -1,10 +1,10 @@
-﻿# MoneyEditTextView
-[![](https://jitpack.io/v/yuhaocan/MoneyEditText.svg)](https://jitpack.io/#yuhaocan/MoneyEditText)
+﻿# CurrencyEditText
+[![](https://jitpack.io/v/yuhaocan/MoneyEditText.svg)](https://jitpack.io/#yuhaocan/CurrencyEditText)
 >
 Currency text EditTextView
 
 # Screenshots
-![image](https://github.com/yuhaocan/MoneyEditText/blob/master/2016-07-21-11mzresult.gif)
+![image](2016-07-21-11mzresult.gif)
 
 # Usage
 ## Step 1. Add it in your root build.gradle at the end of repositories:
