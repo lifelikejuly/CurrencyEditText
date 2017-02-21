@@ -20,7 +20,7 @@ allprojects {
 ## Step 2. Add the dependency([See Latest release](https://jitpack.io/#yuhaocan/MoneyEditText/0.1702192314))
 ```
 dependencies {
-		compile 'com.github.yuhaocan:MoneyEditText:+'
+		compile 'com.github.yuhaocan:CurrencyEditText:+'
 	}
 ```
 ## Step 3. Add to layout
